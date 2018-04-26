@@ -161,25 +161,24 @@ if SENSOR == None:
 
 print("Connected sensor: %s" % SENSOR)
 
-server_sock=BluetoothSocket( RFCOMM )
-server_sock.bind(("",PORT_ANY))
-server_sock.listen(1)
+server_sock=BluetoothSocket( RFCOMM ) # create bt socket using RFCOMM protocol
+server_sock.bind(("",PORT_ANY))       # bind socket to bt adapter of device on any port
+server_sock.listen(1)                 # allow one connection at a time
 
 port = server_sock.getsockname()[1]
 
-uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
+uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"   # same uuid here and on the other device
 
 advertise_service( server_sock, "ASTMOS",
                    service_id = uuid,
                    service_classes = [ uuid, SERIAL_PORT_CLASS ],
-                   profiles = [ SERIAL_PORT_PROFILE ],
-#                   protocols = [ OBEX_UUID ]
-                    )
+                   profiles = [ SERIAL_PORT_PROFILE ]
+                 )
 
 awaitConnection()   # blocking call
+
+# start threads which handles incoming and outgoing bt communication
 s_thread = threading.Thread(target=sendThread)
 s_thread.start()
 r_thread = threading.Thread(target=receiveThread)
 r_thread.start()
-#data = client_sock.recv(1024)
-#print "received [%s]" % data
